@@ -32,6 +32,8 @@ const app = {
     //Capter la soumission du formulaire des cartes
     const addCardForm = document.querySelector('#formSaveCard')
     addCardForm.addEventListener('submit',cardModule.handleAddCardForm)
+
+    
   },
 
   //Fonction qui ferme les modals

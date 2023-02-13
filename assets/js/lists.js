@@ -37,14 +37,32 @@ const listModule = {
         //Modification de l'id du clone
         copieListe.querySelector('.panel').dataset.listId = listeObjet.id
 
+
+
+        //copieListe.querySelector('input[name="list-id"]').value = listeObjet.id
+        copieListe.querySelector('form [type=hidden]').value = listeObjet.id;
+
+        //console.log("listeObjet.id : " + listeObjet.id)
+        //console.log("Hidden : " + copieListe.querySelector('form [type=hidden]').value)
+
         //Modification du bouton + pour qu'il affiche la modal des cards
         copieListe.querySelector(".is-pulled-right").addEventListener('click', cardModule.showAddCarteModal)
+
+        //Lie la poubelle a une fonction
+        copieListe.querySelector(".delete-liste").addEventListener('click', listModule.supprimerListe)
 
         //Recuperation du container de listes
         const listsContainer = document.querySelector('.card-lists')
 
+        //Ajout d'un evenment sur le double clique sur le titre de la liste
+        copieListe.querySelector("h2").addEventListener('dblclick', listModule.afficherModificationList)
+
+        //Ajout d'un evenment sur la validation du formulaire de modification
+        copieListe.querySelector("form").addEventListener('submit',listModule.validerEditionFormulaire)
+
         //Ajout du clone dans le conteneurs de listes
         listsContainer.prepend(copieListe)
+
     },
       //On va aller chercher les listes dans l'API
   //L'api va chercher les listes dans une bdd
@@ -73,5 +91,50 @@ const listModule = {
         cardModule.makeCardInDOM(carte)
       }
     }
+  },
+  afficherModificationList:  function(event) {
+    //Cache le titre de la liste sur lequel on va cliquer.
+    event.target.classList.add("is-hidden")
+    //Afficher le formulaire juste après le titre.
+    event.target.nextElementSibling.classList.remove("is-hidden")
+  },
+  validerEditionFormulaire: async function(event)
+  {
+    //stopper rechargement de la page
+    event.preventDefault()
+    
+    //Recuperation des données
+    const formData = new FormData(event.target)
+
+    console.log("Yaaa" + formData.get("id"))
+    console.log(formData.get("name"))
+
+    //Envoi de la requete de demande de modification
+    //Dans l'entete de la requete se trouve l'id de la liste a modifier
+    //Dans le corps de la requete se trouve lees nouvelles données de la liste
+    await fetch(app.base_url + "/lists/" +  formData.get("888"), 
+    {
+      method:"PUT",
+      body:formData
+    })
+
+    //Reconstruction de l'IHM
+    listModule.getListsFromApi()
+  },
+
+  supprimerListe : async function (event) {
+
+    if(!confirm("Voulez vous supprimer ?")) 
+      return
+
+    const liste = event.target.closest(".panel")
+    const idListe = liste.dataset.listId
+  
+    await fetch(app.base_url + "/lists/" +  idListe, {
+      method:"DELETE"
+    })
+  
+    //Reconstruction de l'IHM
+    listModule.getListsFromApi()
   }
 }
