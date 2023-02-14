@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css">
     <link rel="stylesheet" href="./assets/css/style.css">
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <script src="https://raw.githack.com/SortableJS/Sortable/master/Sortable.js"></script>
 </head>
 
 <body>
@@ -30,6 +31,9 @@
 
                 <div class="column is-full">
                     <div class="card-lists columns">
+
+
+
 
                     </div>
                 </div>
@@ -121,6 +125,10 @@
                 </div>
             </div>
             <div class="panel-block is-block has-background-light">
+
+
+
+
             </div>
         </div>
     </template>
@@ -133,6 +141,8 @@
         <div class="box" data-card-id="I">
             <div class="columns">
                 <div id="titleCard" class="column classTitre">XXX</div>
+
+                
                 
                 
 
@@ -164,9 +174,25 @@
                         <div class="control">
                             <button class="button is-small is-success">Valider</button>
                         </div>
+
                     </div>
                     <p></p>
                 </form>
+            </div>
+
+            <div class="columns ajoutTag">
+                <div class="column is-narrow">
+                    <a href="#">
+                        <span class="add-tag icon is-small has-text-danger">
+                            <i class="fas fa-tag"></i>
+                        </span>
+                        <select name="select-tags"></select>
+                    </a>
+                </div>
+            </div>
+
+            <div class="columns tags">
+
             </div>
         </div>
 

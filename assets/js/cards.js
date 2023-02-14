@@ -34,7 +34,7 @@ handleAddCardForm: async function(event)
   app.hideModals();
 },
 //Fonction de création de la nouvelle carte dans l'ihm
-makeCardInDOM: function(carteObjet)
+makeCardInDOM: async function(carteObjet)
 {
   //Recuperation du template
   const template = document.querySelector('#cardColumn')
@@ -60,12 +60,85 @@ makeCardInDOM: function(carteObjet)
 
   copieCard.querySelector('.delete-card ').addEventListener('click',cardModule.supprimerCarte)
   
+  //GESTION DES TAGS
+  const reponse = await fetch(app.base_url + "/cards/" + carteObjet.id)
+  
+  const laCarteAvecTags = await reponse.json()
+
+  const conteneurDeTags = copieCard.querySelector('.tags')
+
+  for(const tag of laCarteAvecTags.Tags)
+  {
+    const divTag = document.createElement('div')
+    divTag.classList.add('column')
+    
+    divTag.innerText = tag.name
+    divTag.dataset.tagId = tag.id
+
+    divTag.addEventListener('dblclick',cardModule.supprimerTag)
+
+    conteneurDeTags.append(divTag)
+  }
+
+  const tagsReponse = await fetch(app.base_url + "/tags")
+
+  const tags = await tagsReponse.json()
+
+  const select = copieCard.querySelector('[name="select-tags"]')
+
+  for(const tag of tags)
+  {
+    const divTag = document.createElement('option')
+    divTag.value = tag.id
+    divTag.innerText = tag.name
+    select.append(divTag)
+  }
+
+  const btnAjoutTag = copieCard.querySelector(".add-tag")
+
+  btnAjoutTag.addEventListener("click",cardModule.ajoutTag)
+
+
 
   //Conteneurs des cartes
   const conteneurDesCartes = liste.querySelector('.panel-block')
   //Ajouts de la carte dans le conteneur de cartes
   console.log("conteneurDesCartes ---------- " + conteneurDesCartes)
   conteneurDesCartes.append(copieCard)
+},
+ajoutTag : async function(event) 
+{
+  const cardId = event.target.closest('.box').dataset.cardId
+
+  const tagId = event.target.closest('.box').querySelector('[name="select-tags"]').value
+
+  console.log("cardId" + cardId)
+  console.log("tagId" + tagId)
+
+  const formData = new FormData()
+  formData.set("tagId",tagId)
+
+  await fetch(app.base_url + "/cards/" + cardId + "/tags", 
+        {
+            method:"POST",
+            body:formData
+        });
+
+  //Reconstruction de l'IHM
+  listModule.getListsFromApi()
+},
+supprimerTag : async function(event) 
+{
+  const tagId = event.target.dataset.tagId
+  const cardId = event.target.closest('.box').dataset.cardId
+
+  await fetch(app.base_url + "/cards/"+cardId+"/tags/"+ tagId, 
+        {
+            method:"DELETE"
+        });
+
+  //Reconstruction de l'IHM
+  listModule.getListsFromApi()
 },
 afficherModificationCarte:  function(event) {
 
