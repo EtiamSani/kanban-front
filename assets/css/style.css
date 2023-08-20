@@ -6,3 +6,15 @@ body {
 .card-lists {
   overflow-x: auto;
 }
+
+.fa-plus {
+  margin-left: 1rem;
+}
+
+.input {
+  margin-bottom: 1rem;
+  width: 90px;
+  padding: 1px;
+  
+}
+
