@@ -1,5 +1,17 @@
 {
+  "name": "okanban-front",
+  "version": "1.0.0",
+  "description": "kanban",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "browserify -e src/app.js -o assets/js/bundle.min.js -p tinyify"
+  },
   "dependencies": {
-    "bulma": "^0.9.4"
+    "browserify": "^17.0.0",
+    "bulma": "^0.9.4",
+    "sortablejs": "^1.15.0",
+    "tinyify": "^4.0.0"
   }
+  
 }

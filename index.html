@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css">
     <link rel="stylesheet" href="./assets/css/style.css">
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
-    <script src="https://raw.githack.com/SortableJS/Sortable/master/Sortable.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 </head>
 
 <body>
@@ -30,11 +30,9 @@
             <div class="columns">
 
                 <div class="column is-full">
-                    <div class="card-lists columns">
-
-
-
-
+                    <div class="card-lists columns" id="listContainer">
+                        <!-- Ici, on va insérer nos listes récupérées à travers notre API -->
+                       
                     </div>
                 </div>
             </div>
@@ -68,41 +66,76 @@
     <div class="modal" id="addCardModal">
         <div class="modal-background"></div>
         <div class="modal-card">
-            <form id="formSaveCard" action="" method="POST">
+            <form action="" method="POST">
                 <header class="modal-card-head">
                     <p class="modal-card-title">Ajouter une carte</p>
                     <button class="delete close" type="button" aria-label="close"></button>
                 </header>
                 <section class="modal-card-body">
                     <div class="field">
-                        <label class="label">Nom</label>
+                        <label class="label">Contenu</label>
                         <div class="control">
-                            <input type="text" class="input" name="description" value="" placeholder="Nom de la carte">
-                            <input type="hidden" name="listId">
+                            <input type="text" class="input" name="title" value="" placeholder="Contenu de la carte">
+                            <input type="hidden" name="list_id">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="label">Couleur</label>
+                        <div class="control">
+                            <input type="color" class="input" name="color" value="#ff00ff"
+                                placeholder="Couleur de la carte">
                         </div>
                     </div>
                 </section>
                 <footer class="modal-card-foot">
-                    <button  class="button is-success">Save changes</button>
+                    <button class="button is-success">Save changes</button>
                     <button class="button close" type="button">Cancel</button>
                 </footer>
             </form>
         </div>
     </div>
 
-    <template id="listColumn">
-        <div class="column is-one-quarter panel" data-list-id="A">
+    <div class="modal" id="associateTagModal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <form action="" method="POST">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Associer un tag à cette carte</p>
+                    <button class="delete close" type="button" aria-label="close"></button>
+                </header>
+                <section class="modal-card-body">
+                    <div class="field">
+                        <label class="label" for="tags-select">Tag</label>
+                            <select name="tag_id" id="tags-select">
+
+                            </select>
+                            <input type="hidden" name="card_id" value="">
+                    </div>
+                </section>
+                <footer class="modal-card-foot">
+                    <button class="button is-success">Save changes</button>
+                    <button class="button close" type="button">Cancel</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+    <!-- Les templates sont un peu comme les partials en ejs. Ce sont des modèles d'éléments qui sont réutilisables.
+    Par exemple si on veut créer une liste, on peut reutiliser le template qui possède l'id "list-template"
+    Ici on a créé le template a partir d'une liste déjà existante plus haut -->
+
+    <!-- Templates -->
+    <template id="list-template">
+         <!-- list -->
+         <div class="column is-one-quarter panel" data-list-id="">
             <div class="panel-heading has-background-info">
                 <div class="columns">
+
                     <div class="column">
-                        <h2 id="listTitle" class="has-text-white">TITRE LISTE</h2>
-                        <a href="#">
-                            <span class="delete-liste icon is-small has-text-danger">
-                                <i class="fas fa-trash-alt"></i>
-                            </span>
-                        </a>
-                        <form action="" method="POST" class="is-hidden">
-                            <input type="hidden" name="id" value="1">
+                        <h2 class="has-text-white"></h2>
+
+                        <form action="" method="POST" class="is-hidden edit-list-form">
+                            <input type="hidden" name="list-id" value="">
                             <div class="field has-addons">
                                 <div class="control">
                                     <input type="text" class="input is-small" name="name" value=""
@@ -116,93 +149,82 @@
                     </div>
 
                     <div class="column is-narrow">
-                        <a href="#" class="is-pulled-right">
+                        <a href="#" class="is-pulled-right button--add-card">
                             <span class="icon is-small has-text-white">
                                 <i class="fas fa-plus"></i>
+                            </span>
+                        </a>
+                        <a href="#" class="button--delete-list">
+                            <span class="icon is-small has-text-white">
+                                <i class="fas fa-trash"></i>
                             </span>
                         </a>
                     </div>
                 </div>
             </div>
             <div class="panel-block is-block has-background-light">
-
-
-
-
+                
             </div>
         </div>
+        <!--/ list -->
     </template>
 
-    <template id="cardColumn">
-        
-
-       
-
-        <div class="box" data-card-id="I">
+    <template id="template-card">
+        <!-- card -->
+        <div class="box" data-card-id="">
             <div class="columns">
-                <div id="titleCard" class="column classTitre">XXX</div>
+                <div class="column card-name">
 
-                
-                
-                
+                </div>
+                <div class="tags">
 
+                </div>
+                <form action="" method="POST" class="is-hidden edit-card-form">
+                    <input type="hidden" name="card-id" value="">
+                    <div class="field has-addons">
+                        <div class="control">
+                            <input type="text" class="input is-small" name="description" value=""
+                                placeholder="Nom de la carte">
+                        </div>
+                        <div class="control">
+                            <button class="button is-small is-success">Valider</button>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="control">
+                            <input type="color" class="input" name="color" value="" placeholder="Couleur de la carte">
+                        </div>
+                    </div>
+                </form>
                 <div class="column is-narrow">
-                    <a href="#">
-                        <span class="edit-card icon is-small has-text-primary">
+                    <a href="#" class="associate-tag-icon">
+                        <span class="icon is-small has-text-primary">
+                            <i class="fas fa-tag"></i>
+                        </span>
+                    </a>
+                    <a href="#" class="edit-card-icon">
+                        <span class="icon is-small has-text-primary">
                             <i class="fas fa-pencil-alt"></i>
                         </span>
                     </a>
-                    <a href="#">
-                        <span class="delete-card icon is-small has-text-danger">
+                    <a href="#" class="delete-card-icon">
+                        <span class="icon is-small has-text-danger">
                             <i class="fas fa-trash-alt"></i>
                         </span>
                     </a>
                 </div>
-
-                <form action="" method="POST" class="is-hidden form-card">
-                    <input type="hidden" name="id" value="1">
-                    <div class="field has-addons">
-                        <div class="control">
-                            <input type="text" class="input is-small" name="description" value=""
-                                placeholder="Description de la carte">
-                        </div>
-        
-                        <div class="control">
-                            <input type="color" name="color" class="inputColor">
-                        </div>
-        
-                        <div class="control">
-                            <button class="button is-small is-success">Valider</button>
-                        </div>
-
-                    </div>
-                    <p></p>
-                </form>
-            </div>
-
-            <div class="columns ajoutTag">
-                <div class="column is-narrow">
-                    <a href="#">
-                        <span class="add-tag icon is-small has-text-danger">
-                            <i class="fas fa-tag"></i>
-                        </span>
-                        <select name="select-tags"></select>
-                    </a>
-                </div>
-            </div>
-
-            <div class="columns tags">
-
             </div>
         </div>
-
+        <!--/ card -->
     </template>
 
 
     <!-- Chargement de mon fichier JS -->
-    <script src="./assets/js/app.js"></script>
-    <script src="./assets/js/lists.js"></script>
-    <script src="./assets/js/cards.js"></script>
+    <script src="./src/app.js"></script>
+    <script src="./src/cards.js"></script>
+    <script src="./src/lists.js"></script>
+    <script src="./src/utils.js"></script>
+    <script src="./src/tag.js"></script>
 
 
 </body>
